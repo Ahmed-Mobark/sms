@@ -61,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
           useInheritedMediaQuery: true,
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
-            primarySwatch: Colors.indigo,
+            primarySwatch: Colors.red,
           ),
           home: Scaffold(
             resizeToAvoidBottomInset: false,
@@ -139,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         'empty',
                                                     style: TextStyle(
                                                         fontSize: 4.w,
-                                                        color: Colors.indigo,
+                                                        color: Colors.red,
                                                         fontWeight:
                                                             FontWeight.w500),
                                                   ),
@@ -159,9 +159,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           .spaceBetween,
                                                   children: [
                                                     CustomText(
-                                                      text: 'ADE 0.00',
-                                                      color: Colors.indigo,
+                                                      text: 'ADE ${messages[index].id}',
                                                       fontSize: 4.w,
+                                                      overflow: TextOverflow.ellipsis,
                                                       fontweight:
                                                           FontWeight.w500,
                                                     ),
@@ -178,14 +178,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                               padding: EdgeInsets.all(3.w),
                                               width: 100.w,
                                               color: Colors.white,
-                                              child: Text(
-                                                messages[index]
-                                                        .messages
-                                                        .last
-                                                        .body ??
-                                                    'empty',
-                                                style: const TextStyle(),
-                                              )),
+                                              child: CustomText(
+                                                  text: messages[index]
+                                                          .messages
+                                                          .last
+                                                          .body ??
+                                                      'empty',
+                                                  fontSize: 3.5.w)),
                                         ),
                                       ),
                                     );
@@ -235,7 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                               ?.address ??
                                                           'empty',
                                                       fontSize: 4.w,
-                                                      color: Colors.indigo,
+                                                      color: Colors.red,
                                                       fontweight:
                                                           FontWeight.w500),
                                                   CustomText(
@@ -254,7 +253,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   children: [
                                                     CustomText(
                                                       text: 'ADE 0.00',
-                                                      color: Colors.indigo,
                                                       fontSize: 4.w,
                                                       fontweight:
                                                           FontWeight.w500,
@@ -272,14 +270,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                               padding: EdgeInsets.all(3.w),
                                               width: 100.w,
                                               color: Colors.white,
-                                              child: Text(
-                                                results[index]
-                                                        .messages
-                                                        .last
-                                                        .body ??
-                                                    'empty',
-                                                style: const TextStyle(),
-                                              )),
+                                              child: CustomText(
+                                                  text: results[index]
+                                                          .messages
+                                                          .last
+                                                          .body ??
+                                                      'empty',
+                                                  fontSize: 3.5.w)),
                                         ),
                                       ),
                                     );
@@ -297,7 +294,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(20),
                           topRight: Radius.circular(20)),
-                      color: Colors.indigo),
+                      color: Colors.red),
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
