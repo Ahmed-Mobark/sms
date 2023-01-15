@@ -20,13 +20,32 @@ class _HomeScreenState extends State<HomeScreen> {
   List<SmsThread> threads = [];
   TextEditingController searchCtn = TextEditingController();
   var ReciveController = ExpandableController(initialExpanded: true);
+  var text = '''
+Lorem Ipsum is simply dummy text of the 123.456 printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an 12:30 unknown printer took a galley of type and scrambled it to make a
+23.4567
+type specimen book. It has 445566 survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+''';
 
+  final intRegex = RegExp(r'\s+(\d+)\s+', multiLine: true);
+  final doubleRegex = RegExp(r'\s+(\d+\.\d+)\s+', multiLine: true);
+  final timeRegex = RegExp(r'\s+(\d{1,2}:\d{2})\s+', multiLine: true);
   @override
   void initState() {
     super.initState();
     query.getAllThreads.then((value) {
       threads = value;
       print(threads);
+      setState(() {
+        print(intRegex
+            .allMatches(threads[0].contact!.address!)
+            .map((m) => m.group(0)));
+        print(doubleRegex
+            .allMatches(threads[0].contact!.address!)
+            .map((m) => m.group(0)));
+        print(timeRegex
+            .allMatches(threads[0].messages.first.body!)
+            .map((m) => m.group(0)));
+      });
     });
   }
 
@@ -39,6 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Sizer(builder: (context, orientation, deviceType) {
       return MaterialApp(
+          useInheritedMediaQuery: true,
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
             primarySwatch: Colors.indigo,
@@ -72,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             hintText: 'Search here ...',
                             prefixIcon: const Icon(Icons.search),
                             controller: searchCtn),
-                        foundUsers.isEmpty
+                        foundUsers == []
                             ? ListView.builder(
                                 physics: const BouncingScrollPhysics(),
                                 itemCount: threads.length,
@@ -299,13 +319,11 @@ class _HomeScreenState extends State<HomeScreen> {
       results = threads;
     } else {
       results = threads
-          .where((user) => user.contact!.address!
-              .toLowerCase()
-              .contains(enteredKeyword.toLowerCase()))
+          .where((user) =>
+              user.contact!.address.toString().contains(enteredKeyword))
           .toList();
+      setState(() {});
     }
-
-    // Refresh the UI
     setState(() {
       foundUsers = results;
     });
