@@ -20,7 +20,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.18.4 <3.0.0'
+  sdk: '>=2.18.0 <3.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -40,6 +40,9 @@ dependencies:
   permission_handler: ^10.2.0
   flutter_sms_inbox: ^1.0.2
   sms_advanced: ^1.0.1
+  sizer: ^2.0.15
+  expandable: ^5.0.1
+
 
 dev_dependencies:
   flutter_test:
