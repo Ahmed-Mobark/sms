@@ -1,6 +1,7 @@
 // ignore_for_file: unused_local_variable, non_constant_identifier_names
 
 import 'package:expandable/expandable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:sms/widgets/custom_text.dart';
@@ -30,7 +31,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void runFilter(String enteredKeyword) {
     if (enteredKeyword.isEmpty) {
-      // if the search field is empty or only contains white-space, we'll display all users
       results = messages;
     } else {
       results = messages
@@ -41,6 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     setState(() {
       foundUsers = results;
+      print(foundUsers);
     });
   }
 
@@ -49,7 +50,6 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     query.getAllThreads.then((value) {
       messages = value;
-      print(messages);
       setState(() {});
     });
   }
@@ -64,11 +64,13 @@ class _HomeScreenState extends State<HomeScreen> {
             primarySwatch: Colors.indigo,
           ),
           home: Scaffold(
+            resizeToAvoidBottomInset: false,
             appBar: AppBar(title: const Text("Messages"), actions: [
               IconButton(
                 onPressed: () {
                   query.getAllThreads.then((value) {
                     messages = value;
+                    print(messages);
                     setState(() {});
                   });
                 },
@@ -78,207 +80,213 @@ class _HomeScreenState extends State<HomeScreen> {
             body: Column(
               children: [
                 Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 3.w),
-                    child: Column(
-                      children: [
-                        CustomTextFormField(
-                            onChangedFun: () {
-                              setState(() {
-                                print("object");
-                              });
-                              runFilter(searchCtn.text.trim());
-                            },
-                            hintText: 'Search here ...',
-                            prefixIcon: const Icon(Icons.search),
-                            controller: searchCtn),
-                        foundUsers == []
-                            ? ListView.builder(
-                                physics: const BouncingScrollPhysics(),
-                                itemCount: messages.length,
-                                shrinkWrap: true,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return Container(
-                                    alignment: Alignment.center,
-                                    margin: EdgeInsets.only(bottom: 2.w),
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 2.w, horizontal: 2.w),
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(
-                                          2.w,
-                                        ),
-                                        color: Colors.grey.withOpacity(.2)),
-                                    child: InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          expandRes = ((tappedRes == null) ||
-                                                  ((index == tappedRes) ||
-                                                      !expandRes))
-                                              ? !expandRes
-                                              : expandRes;
-                                          tappedRes = index;
-                                        });
-                                      },
-                                      child: ExpandablePanel(
-                                        expanded: const SizedBox(),
-                                        controller: ExpandableController(
-                                            initialExpanded: expandRes),
-                                        header: Column(
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Text(
-                                                  messages[index]
-                                                          .contact
-                                                          ?.address ??
-                                                      'empty',
-                                                  style: TextStyle(
-                                                      fontSize: 4.w,
-                                                      color: Colors.indigo,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                ),
-                                                Text(
-                                                  "${messages[index].messages.first.date!.day} / ${messages[index].messages.first.date!.month} / ${messages[index].messages.first.date!.year}",
-                                                  style:
-                                                      TextStyle(fontSize: 4.w),
-                                                ),
-                                              ],
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                  vertical: 2.w),
-                                              child: Row(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 3.w),
+                      child: Column(
+                        children: [
+                          CustomTextFormField(
+                              onChangedFun: () {
+                                runFilter(searchCtn.text.trim());
+                              },
+                              hintText: 'Search here ...',
+                              prefixIcon: const Icon(Icons.search),
+                              controller: searchCtn),
+                          searchCtn.text.isEmpty
+                              ? ListView.builder(
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: messages.length,
+                                  shrinkWrap: true,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return Container(
+                                      alignment: Alignment.center,
+                                      margin: EdgeInsets.only(bottom: 2.w),
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 2.w, horizontal: 2.w),
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            2.w,
+                                          ),
+                                          color: Colors.grey.withOpacity(.2)),
+                                      child: InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            expandRes = ((tappedRes == null) ||
+                                                    ((index == tappedRes) ||
+                                                        !expandRes))
+                                                ? !expandRes
+                                                : expandRes;
+                                            tappedRes = index;
+                                          });
+                                        },
+                                        child: ExpandablePanel(
+                                          expanded: const SizedBox(),
+                                          controller: ExpandableController(
+                                              initialExpanded: expandRes),
+                                          header: Column(
+                                            children: [
+                                              Row(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment
                                                         .spaceBetween,
                                                 children: [
-                                                  CustomText(
-                                                    text: 'ADE 0.00',
-                                                    color: Colors.indigo,
-                                                    fontweight: FontWeight.w500,
-                                                  ),
-                                                  CustomText(
-                                                    text: "Click to show",
-                                                    fontSize: 3.w,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        collapsed: Container(
-                                            padding: EdgeInsets.all(3.w),
-                                            width: 100.w,
-                                            color: Colors.white,
-                                            child: Text(
-                                              messages[index]
-                                                      .messages
-                                                      .last
-                                                      .body ??
-                                                  'empty',
-                                              style: const TextStyle(),
-                                            )),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              )
-                            : ListView.builder(
-                                physics: const BouncingScrollPhysics(),
-                                itemCount: results.length,
-                                shrinkWrap: true,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return Container(
-                                    alignment: Alignment.center,
-                                    margin: EdgeInsets.only(bottom: 2.w),
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 2.w, horizontal: 2.w),
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(
-                                          2.w,
-                                        ),
-                                        color: Colors.grey.withOpacity(.2)),
-                                    child: InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          expand = ((tapped == null) ||
-                                                  ((index == tapped) ||
-                                                      !expand))
-                                              ? !expand
-                                              : expand;
-                                          tapped = index;
-                                        });
-                                      },
-                                      child: ExpandablePanel(
-                                        expanded: const SizedBox(),
-                                        controller: ExpandableController(
-                                            initialExpanded: expand),
-                                        header: Column(
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                CustomText(
-                                                    text: results[index]
+                                                  Text(
+                                                    messages[index]
                                                             .contact
                                                             ?.address ??
                                                         'empty',
-                                                    fontSize: 4.w,
-                                                    color: Colors.indigo,
-                                                    fontweight:
-                                                        FontWeight.w500),
-                                                CustomText(
-                                                    text:
-                                                        "${results[index].messages.first.date!.day} / ${results[index].messages.first.date!.month} / ${results[index].messages.first.date!.year}",
-                                                    fontSize: 4.w),
-                                              ],
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                  vertical: 2.w),
-                                              child: Row(
+                                                    style: TextStyle(
+                                                        fontSize: 4.w,
+                                                        color: Colors.indigo,
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                  Text(
+                                                    "${messages[index].messages.first.date!.day} / ${messages[index].messages.first.date!.month} / ${messages[index].messages.first.date!.year}",
+                                                    style: TextStyle(
+                                                        fontSize: 4.w),
+                                                  ),
+                                                ],
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 2.w),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    CustomText(
+                                                      text: 'ADE 0.00',
+                                                      color: Colors.indigo,
+                                                      fontSize: 4.w,
+                                                      fontweight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                    CustomText(
+                                                      text: "Click to show",
+                                                      fontSize: 3.5.w,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          collapsed: Container(
+                                              padding: EdgeInsets.all(3.w),
+                                              width: 100.w,
+                                              color: Colors.white,
+                                              child: Text(
+                                                messages[index]
+                                                        .messages
+                                                        .last
+                                                        .body ??
+                                                    'empty',
+                                                style: const TextStyle(),
+                                              )),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                )
+                              : ListView.builder(
+                                  itemCount: results.length,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return Container(
+                                      alignment: Alignment.center,
+                                      margin: EdgeInsets.only(bottom: 2.w),
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 2.w, horizontal: 2.w),
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            2.w,
+                                          ),
+                                          color: Colors.grey.withOpacity(.2)),
+                                      child: InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            expand = ((tapped == null) ||
+                                                    ((index == tapped) ||
+                                                        !expand))
+                                                ? !expand
+                                                : expand;
+                                            tapped = index;
+                                          });
+                                        },
+                                        child: ExpandablePanel(
+                                          expanded: const SizedBox(),
+                                          controller: ExpandableController(
+                                              initialExpanded: expand),
+                                          header: Column(
+                                            children: [
+                                              Row(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment
                                                         .spaceBetween,
                                                 children: [
                                                   CustomText(
-                                                    text: 'ADE 0.00',
-                                                    color: Colors.indigo,
-                                                    fontweight: FontWeight.w500,
-                                                  ),
+                                                      text: results[index]
+                                                              .contact
+                                                              ?.address ??
+                                                          'empty',
+                                                      fontSize: 4.w,
+                                                      color: Colors.indigo,
+                                                      fontweight:
+                                                          FontWeight.w500),
                                                   CustomText(
-                                                    text: "Click to show",
-                                                    fontSize: 3.w,
-                                                  ),
+                                                      text:
+                                                          "${results[index].messages.first.date!.day} / ${results[index].messages.first.date!.month} / ${results[index].messages.first.date!.year}",
+                                                      fontSize: 4.w),
                                                 ],
                                               ),
-                                            ),
-                                          ],
+                                              Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 2.w),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    CustomText(
+                                                      text: 'ADE 0.00',
+                                                      color: Colors.indigo,
+                                                      fontSize: 4.w,
+                                                      fontweight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                    CustomText(
+                                                      text: "Click to show",
+                                                      fontSize: 3.5.w,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          collapsed: Container(
+                                              padding: EdgeInsets.all(3.w),
+                                              width: 100.w,
+                                              color: Colors.white,
+                                              child: Text(
+                                                results[index]
+                                                        .messages
+                                                        .last
+                                                        .body ??
+                                                    'empty',
+                                                style: const TextStyle(),
+                                              )),
                                         ),
-                                        collapsed: Container(
-                                            padding: EdgeInsets.all(3.w),
-                                            width: 100.w,
-                                            color: Colors.white,
-                                            child: Text(
-                                              results[index]
-                                                      .messages
-                                                      .last
-                                                      .body ??
-                                                  'empty',
-                                              style: const TextStyle(),
-                                            )),
                                       ),
-                                    ),
-                                  );
-                                },
-                              )
-                      ],
+                                    );
+                                  },
+                                )
+                        ],
+                      ),
                     ),
                   ),
                 ),
