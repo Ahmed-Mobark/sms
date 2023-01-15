@@ -1,4 +1,4 @@
-// ignore_for_file: unused_local_variable
+// ignore_for_file: unused_local_variable, non_constant_identifier_names
 
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
@@ -17,43 +17,43 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final SmsQuery query = SmsQuery();
-  List<SmsThread> threads = [];
-  TextEditingController searchCtn = TextEditingController();
-  var ReciveController = ExpandableController(initialExpanded: true);
-  var text = '''
-Lorem Ipsum is simply dummy text of the 123.456 printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an 12:30 unknown printer took a galley of type and scrambled it to make a
-23.4567
-type specimen book. It has 445566 survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-''';
-
-  final intRegex = RegExp(r'\s+(\d+)\s+', multiLine: true);
-  final doubleRegex = RegExp(r'\s+(\d+\.\d+)\s+', multiLine: true);
-  final timeRegex = RegExp(r'\s+(\d{1,2}:\d{2})\s+', multiLine: true);
-  @override
-  void initState() {
-    super.initState();
-    query.getAllThreads.then((value) {
-      threads = value;
-      print(threads);
-      setState(() {
-        print(intRegex
-            .allMatches(threads[0].contact!.address!)
-            .map((m) => m.group(0)));
-        print(doubleRegex
-            .allMatches(threads[0].contact!.address!)
-            .map((m) => m.group(0)));
-        print(timeRegex
-            .allMatches(threads[0].messages.first.body!)
-            .map((m) => m.group(0)));
-      });
-    });
-  }
-
+  List<SmsThread> messages = [];
+  List<SmsThread> results = [];
+  List<SmsThread> foundUsers = [];
   bool expand = true;
   int? tapped;
   bool expandRes = true;
   int? tappedRes;
   int total = 0;
+  TextEditingController searchCtn = TextEditingController();
+  var ReciveController = ExpandableController(initialExpanded: true);
+
+  void runFilter(String enteredKeyword) {
+    if (enteredKeyword.isEmpty) {
+      // if the search field is empty or only contains white-space, we'll display all users
+      results = messages;
+    } else {
+      results = messages
+          .where((searchResult) =>
+              searchResult.contact!.address.toString().contains(enteredKeyword))
+          .toList();
+      setState(() {});
+    }
+    setState(() {
+      foundUsers = results;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    query.getAllThreads.then((value) {
+      messages = value;
+      print(messages);
+      setState(() {});
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Sizer(builder: (context, orientation, deviceType) {
@@ -68,7 +68,7 @@ type specimen book. It has 445566 survived not only five centuries, but also the
               IconButton(
                 onPressed: () {
                   query.getAllThreads.then((value) {
-                    threads = value;
+                    messages = value;
                     setState(() {});
                   });
                 },
@@ -95,7 +95,7 @@ type specimen book. It has 445566 survived not only five centuries, but also the
                         foundUsers == []
                             ? ListView.builder(
                                 physics: const BouncingScrollPhysics(),
-                                itemCount: threads.length,
+                                itemCount: messages.length,
                                 shrinkWrap: true,
                                 itemBuilder: (BuildContext context, int index) {
                                   return Container(
@@ -131,7 +131,7 @@ type specimen book. It has 445566 survived not only five centuries, but also the
                                                       .spaceBetween,
                                               children: [
                                                 Text(
-                                                  threads[index]
+                                                  messages[index]
                                                           .contact
                                                           ?.address ??
                                                       'empty',
@@ -142,7 +142,7 @@ type specimen book. It has 445566 survived not only five centuries, but also the
                                                           FontWeight.w500),
                                                 ),
                                                 Text(
-                                                  "${threads[index].messages.first.date!.day} / ${threads[index].messages.first.date!.month} / ${threads[index].messages.first.date!.year}",
+                                                  "${messages[index].messages.first.date!.day} / ${messages[index].messages.first.date!.month} / ${messages[index].messages.first.date!.year}",
                                                   style:
                                                       TextStyle(fontSize: 4.w),
                                                 ),
@@ -175,7 +175,7 @@ type specimen book. It has 445566 survived not only five centuries, but also the
                                             width: 100.w,
                                             color: Colors.white,
                                             child: Text(
-                                              threads[index]
+                                              messages[index]
                                                       .messages
                                                       .last
                                                       .body ??
@@ -308,24 +308,6 @@ type specimen book. It has 445566 survived not only five centuries, but also the
               ],
             ),
           ));
-    });
-  }
-
-  List<SmsThread> results = [];
-  List<SmsThread> foundUsers = [];
-  void runFilter(String enteredKeyword) {
-    if (enteredKeyword.isEmpty) {
-      // if the search field is empty or only contains white-space, we'll display all users
-      results = threads;
-    } else {
-      results = threads
-          .where((user) =>
-              user.contact!.address.toString().contains(enteredKeyword))
-          .toList();
-      setState(() {});
-    }
-    setState(() {
-      foundUsers = results;
     });
   }
 }
