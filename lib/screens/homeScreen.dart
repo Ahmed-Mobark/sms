@@ -50,7 +50,18 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     query.getAllThreads.then((value) {
       messages = value;
+      String str = messages[1].messages.first.body!;
+List<String> strarray = str.split(" ");
+//Break string to array with delimiter whitespace "";
+print(strarray);
       setState(() {});
+for(int i=0;i<=strarray.length;i++){
+  if(strarray[i]=='resive'){
+    print( strarray[i+1]);
+    return str[i+1];
+  }
+}
+
     });
   }
 
